@@ -3,12 +3,6 @@ require 'spec_helper'
 describe LicensesController do
   fixtures :all
 
-  def mock_user(stubs={})
-    (@mock_user ||= mock_model(License).as_null_object).tap do |user|
-      user.stub(stubs) unless stubs.empty?
-    end
-  end
-
   describe "GET index" do
     before(:each) do
       Factory.create(:license)
@@ -57,6 +51,30 @@ describe LicensesController do
       end
     end
 
+    describe "When logged in as Librarian" do
+      before(:each) do
+        sign_in Factory(:librarian)
+      end
+
+      it "assigns the requested license as @license" do
+        license = Factory.create(:license)
+        get :show, :id => license.id
+        assigns(:license).should eq(license)
+      end
+    end
+
+    describe "When logged in as User" do
+      before(:each) do
+        sign_in Factory(:user)
+      end
+
+      it "assigns the requested license as @license" do
+        license = Factory.create(:license)
+        get :show, :id => license.id
+        assigns(:license).should eq(license)
+      end
+    end
+
     describe "When not logged in" do
       it "assigns the requested license as @license" do
         license = Factory.create(:license)
@@ -75,6 +93,31 @@ describe LicensesController do
       it "assigns the requested license as @license" do
         get :new
         assigns(:license).should_not be_valid
+        response.should be_forbidden
+      end
+    end
+
+    describe "When logged in as Librarian" do
+      before(:each) do
+        sign_in Factory(:librarian)
+      end
+
+      it "should not assign the requested license as @license" do
+        get :new
+        assigns(:license).should_not be_valid
+        response.should be_forbidden
+      end
+    end
+
+    describe "When logged in as User" do
+      before(:each) do
+        sign_in Factory(:user)
+      end
+
+      it "should not assign the requested license as @license" do
+        get :new
+        assigns(:license).should_not be_valid
+        response.should be_forbidden
       end
     end
 
@@ -97,6 +140,30 @@ describe LicensesController do
         license = Factory.create(:license)
         get :edit, :id => license.id
         assigns(:license).should eq(license)
+      end
+    end
+
+    describe "When logged in as Librarian" do
+      before(:each) do
+        sign_in Factory(:librarian)
+      end
+
+      it "assigns the requested license as @license" do
+        license = Factory.create(:license)
+        get :edit, :id => license.id
+        response.should be_forbidden
+      end
+    end
+
+    describe "When logged in as User" do
+      before(:each) do
+        sign_in Factory(:user)
+      end
+
+      it "assigns the requested license as @license" do
+        license = Factory.create(:license)
+        get :edit, :id => license.id
+        response.should be_forbidden
       end
     end
 
@@ -203,6 +270,56 @@ describe LicensesController do
       end
     end
 
+    describe "When logged in as Librarian" do
+      before(:each) do
+        sign_in Factory(:librarian)
+      end
+
+      describe "with valid params" do
+        it "updates the requested license" do
+          put :update, :id => @license.id, :license => @attrs
+        end
+
+        it "assigns the requested license as @license" do
+          put :update, :id => @license.id, :license => @attrs
+          assigns(:license).should eq(@license)
+          response.should be_forbidden
+        end
+      end
+
+      describe "with invalid params" do
+        it "assigns the requested license as @license" do
+          put :update, :id => @license.id, :license => @invalid_attrs
+          response.should be_forbidden
+        end
+      end
+    end
+
+    describe "When logged in as User" do
+      before(:each) do
+        sign_in Factory(:user)
+      end
+
+      describe "with valid params" do
+        it "updates the requested license" do
+          put :update, :id => @license.id, :license => @attrs
+        end
+
+        it "assigns the requested license as @license" do
+          put :update, :id => @license.id, :license => @attrs
+          assigns(:license).should eq(@license)
+          response.should be_forbidden
+        end
+      end
+
+      describe "with invalid params" do
+        it "assigns the requested license as @license" do
+          put :update, :id => @license.id, :license => @invalid_attrs
+          response.should be_forbidden
+        end
+      end
+    end
+
     describe "When not logged in" do
       describe "with valid params" do
         it "updates the requested license" do
@@ -232,6 +349,36 @@ describe LicensesController do
     describe "When logged in as Administrator" do
       before(:each) do
         sign_in Factory(:admin)
+      end
+
+      it "destroys the requested license" do
+        delete :destroy, :id => @license.id
+      end
+
+      it "should be forbidden" do
+        delete :destroy, :id => @license.id
+        response.should be_forbidden
+      end
+    end
+
+    describe "When logged in as Librarian" do
+      before(:each) do
+        sign_in Factory(:librarian)
+      end
+
+      it "destroys the requested license" do
+        delete :destroy, :id => @license.id
+      end
+
+      it "should be forbidden" do
+        delete :destroy, :id => @license.id
+        response.should be_forbidden
+      end
+    end
+
+    describe "When logged in as User" do
+      before(:each) do
+        sign_in Factory(:user)
       end
 
       it "destroys the requested license" do
