@@ -1,20 +1,62 @@
 namespace :enju do
-  namespace :resource_import do
+  namespace :import do
     desc 'Import resources'
     task :start => :environment do
       ResourceImportFile.import
-    end
-  end
-  namespace :patron_import do
-    desc 'Import patrons'
-    task :start => :environment do
       PatronImportFile.import
+      EventImportFile.import if defined?(EnjuEvent)
+    end
+
+    task :expire => :environment do
+      ResourceImportFile.expire
+      PatronImportFile.expire
+      EventImportFile.expire if defined?(EnjuEvent)
+    end
+
+    task :destroy => :environment do
+      PatronImportFile.stucked.destroy_all
+      ResourceImportFile.stucked.destroy_all
+      EventImportFile.stucked.destroy_all if defined?(EnjuEvent)
     end
   end
-  namespace :event_import do
-    desc 'Import events'
-    task :start => :environment do
-      EventImportFile.import
+
+  namespace :circulation do
+    desc 'Batch processing for circulation'
+    task :stat => :environment do
+      if defined?(EnjuCirculation)
+        UserCheckoutStat.calculate_stat
+        UserReserveStat.calculate_stat
+        ManifestationCheckoutStat.calculate_stat
+        ManifestationReserveStat.calculate_stat
+      end
+    end
+
+    task :expire => :environment do
+      if defined?(EnjuCirculation)
+        Reserve.expire
+        Basket.expire
+      end
+    end
+
+    task :send_notification => :environment do
+      if defined?(EnjuCirculation)
+        Checkout.send_due_date_notification
+        Checkout.send_overdue_notification
+      end
+    end
+  end
+
+  namespace :bookmark do
+    desc "Batch processing for bookmark"
+    task :stat => :environment do
+      BookmarkStat.calculate_stat if defined?(EnjuBookmark)
+    end
+  end
+
+  namespace :message do
+    desc "Send messages"
+    task :send => :environment do
+      MessageRequest.send_messages if defined?(EnjuMessage)
     end
   end
 end
