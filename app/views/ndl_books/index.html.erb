@@ -1,6 +1,6 @@
 <div class="row-fluid">
 <div class="span9">
-<h1 class="title">NDLサーチ検索によるインポート</h1>
+<h1 class="title"><%= t('enju_ndl.import_from_ndl_search') %></h1>
   <p id="notice"><%= notice %></p>
 
 	<%= form_for :books, :url => ndl_books_path, :html => {:method => 'get', :class => 'well form-search' } do -%>
