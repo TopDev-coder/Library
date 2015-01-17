@@ -12,10 +12,8 @@ class RolePolicy < ApplicationPolicy
   end
 
   def update?
-    if user.try(:has_role?, 'Librarian')
+    if user.try(:has_role?, 'Administrator')
       true
-    elsif user.try(:has_role?, 'User')
-      true if record == user.profile
     end
   end
 
