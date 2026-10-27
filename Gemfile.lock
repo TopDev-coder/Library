@@ -141,7 +141,7 @@ GEM
     cssbundling-rails (1.4.3)
       railties (>= 6.0.0)
     csv (3.3.6)
-    database_consistency (3.0.16)
+    database_consistency (3.1.1)
       activerecord (>= 3.2)
     date (3.6.0)
     date_validator (0.12.0)
